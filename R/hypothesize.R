@@ -5,8 +5,26 @@
 #' @importFrom dplyr as.tbl
 #' @export
 #' @examples
-#' if (require(dplyr)) {
-#'
+#' # To see the output of hypothesize() function provided
+#' # in the infer class
+#' if(require(dplyr)){
+#'   mtcars %>%
+#'     mutate(am = factor(am)) %>%
+#'     specify(response = am) %>%
+#'     hypothesize(null = "point", p = c("0" = 0.25, "1" = 0.75)) 
+#' }
+#' 
+#' # hypothesize() assigns attributes to an infer class
+#' if(require(dplyr)){
+#'   mtcars %>%
+#'     mutate(am = factor(am)) %>%
+#'     specify(response = am) %>%
+#'     hypothesize(null = "point", p = c("0" = 0.25, "1" = 0.75)) %>%
+#'     class()
+#' }
+#' 
+#' # To view where hypothesize() falls in the infer package pipeline
+#' if(require(dplyr)) {
 #' # One binary variable
 #'   mtcars %>%
 #'     mutate(am = factor(am)) %>%
@@ -14,7 +32,9 @@
 #'     hypothesize(null = "point", p = c("0" = 0.25, "1" = 0.75)) %>%
 #'     generate(reps = 100, type = "simulate") %>%
 #'     calculate(stat = "prop")
-#'
+#' }
+#' 
+#' if(require(dplyr)) {
 #' # Permutation test
 #'   mtcars %>%
 #'     mutate(cyl = factor(cyl)) %>%
@@ -24,7 +44,7 @@
 #'     calculate(stat = "F")
 #' }
 #'
-#' # Compare with
+#' # Compare with traditional "tidy" hypothesis test results
 #' if (require(dplyr) && require(broom)) {
 #'   cars <- mtcars %>%
 #'     summarize(N = n(), num_manual = sum(am))
@@ -47,6 +67,11 @@ hypothesize <- function(x, null = c("independence", "point"), ...) {
 
   attr(x, "null") <- null
 
+  # error: Didn't specify an explanatory variable with test of independence
+  if(is.null(attr(x, "explanatory")) & null == "independence"){
+    stop('specify() requires an explanatory variable for null = "independence"')
+  }
+  
   dots <- list(...)
   if (length(dots) > 0) {
     params <- parse_params(dots, x)
@@ -71,11 +96,19 @@ parse_params <- function(dots, x) {
   # Outside if() is needed to ensure an error does not occur in referencing the
   # 0 index of dots
   if (length(p_ind)) {
-    if (length(dots[[p_ind]]) == 1) {
+    if (length(dots[[p_ind]]) == 1 & 
+        length(levels(x[[as.character(attr(x, "response"))]])) == 2) {
       warning(paste0("Missing level, assuming proportion is 1 - ", dots$p, "."))
       missing_lev <- setdiff(levels(pull(x, !!attr(x, "response"))), names(dots$p))
       dots$p <- append(dots$p, 1 - dots$p)
       names(dots$p)[2] <- missing_lev
+    }
+    else if (length(dots[[p_ind]]) != length(levels(x[[as.character(attr(x, "response"))]]))){
+      stop(paste("The factor variable that you have specified has",
+                 length(levels(x[[as.character(attr(x, "response"))]])),
+                 "levels and you've only assigned null probabilities to",
+                length(dots[[p_ind]]), 
+                "levels."))
     }
   }
   
