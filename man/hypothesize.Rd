@@ -17,26 +17,8 @@ hypothesize(x, null = c("independence", "point"), ...)
 Declare a null hypothesis
 }
 \examples{
-# To see the output of hypothesize() function provided
-# in the infer class
-if(require(dplyr)){
-  mtcars \%>\%
-    mutate(am = factor(am)) \%>\%
-    specify(response = am) \%>\%
-    hypothesize(null = "point", p = c("0" = 0.25, "1" = 0.75)) 
-}
+if (require(dplyr)) {
 
-# hypothesize() assigns attributes to an infer class
-if(require(dplyr)){
-  mtcars \%>\%
-    mutate(am = factor(am)) \%>\%
-    specify(response = am) \%>\%
-    hypothesize(null = "point", p = c("0" = 0.25, "1" = 0.75)) \%>\%
-    class()
-}
-
-# To view where hypothesize() falls in the infer package pipeline
-if(require(dplyr)) {
 # One binary variable
   mtcars \%>\%
     mutate(am = factor(am)) \%>\%
@@ -44,9 +26,7 @@ if(require(dplyr)) {
     hypothesize(null = "point", p = c("0" = 0.25, "1" = 0.75)) \%>\%
     generate(reps = 100, type = "simulate") \%>\%
     calculate(stat = "prop")
-}
 
-if(require(dplyr)) {
 # Permutation test
   mtcars \%>\%
     mutate(cyl = factor(cyl)) \%>\%
@@ -56,7 +36,7 @@ if(require(dplyr)) {
     calculate(stat = "F")
 }
 
-# Compare with traditional "tidy" hypothesis test results
+# Compare with
 if (require(dplyr) && require(broom)) {
   cars <- mtcars \%>\%
     summarize(N = n(), num_manual = sum(am))
