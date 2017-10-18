@@ -1,13 +1,13 @@
 #' Pipe
 #'
-#' Like \code{dplyr}, \code{infer} also uses the pipe function, \code{\%>\%} to turn
+#' Like dplyr, infer also uses the pipe function, \code{\%>\%} to turn
 #' function composition into a series of imperative statements.
 #'
 #' @importFrom magrittr %>%
 #' @name %>%
 #' @rdname pipe
 #' @export
-#' @param lhs,rhs  Inference functions and the initial data frame
+#' @param lhs,rhs  Inference functions
 NULL
 
 #' Print methods
@@ -19,11 +19,9 @@ NULL
 print.infer <- function(x, ...) {
   attrs <- names(attributes(x))
   if ("response" %in% attrs) {
-    cat(paste("Response: ", attr(x, "response"), "\n"),
-              "Response Type: ", attr(x, "response_type"), "\n")  
+    cat(paste("Response: ", attr(x, "response"), "\n"))  
     if ("explanatory" %in% attrs) {
-      cat(paste("Explanatory: ", attr(x, "explanatory"), "\n"),
-                "Explanatory Type: ", attr(x, "explanatory_type"), "\n")
+      cat(paste("Explanatory: ", attr(x, "explanatory"), "\n"))
     }
   }
   if ("null" %in% attrs) {
