@@ -26,7 +26,7 @@ test_that("hypothesize arguments",{
   
   expect_error(hypothesize(mtcars_s, null=NA))
   expect_warning(hypothesize(mtcars_s))
-  #expect_error()
+
 })
 
 
